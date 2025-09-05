@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CFB Betting Hub - College Football Betting Intelligence</title>
+    <meta name="description" content="Real-time college football betting lines, expert insights, and analytics">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏈%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-football-ball"></i>
+                <span>CFB Betting Hub</span>
+            </div>
+            <div class="nav-links">
+                <a href="#today" class="nav-link active" data-section="today">
+                    <i class="fas fa-calendar-day"></i>
+                    Today
+                </a>
+                <a href="#odds" class="nav-link" data-section="odds">
+                    <i class="fas fa-chart-line"></i>
+                    Odds
+                </a>
+                <a href="#insights" class="nav-link" data-section="insights">
+                    <i class="fas fa-brain"></i>
+                    Expert Insights
+                </a>
+                <a href="#trends" class="nav-link" data-section="trends">
+                    <i class="fas fa-fire"></i>
+                    Trends
+                </a>
+            </div>
+            <div class="nav-status">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>Live Data</span>
+                </div>
+                <div class="last-update">
+                    Updated <span id="lastUpdate">--</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="gradient-text">College Football</span>
+                    <span>Betting Intelligence</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Real-time odds, expert insights, and line movements from every game
+                </p>
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalGames">--</div>
+                        <div class="stat-label">Games Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalInsights">--</div>
+                        <div class="stat-label">Expert Insights</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="lineMovements">--</div>
+                        <div class="stat-label">Line Movements</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Sections -->
+        <div class="content-sections">
+            <!-- Today's Games Section -->
+            <section id="today" class="content-section active">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar-day"></i>
+                        Today's Games
+                    </h2>
+                    <div class="section-controls">
+                        <button class="btn btn-secondary" id="refreshData">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh
+                        </button>
+                        <div class="filter-dropdown">
+                            <button class="btn btn-outline" id="filterBtn">
+                                <i class="fas fa-filter"></i>
+                                Filter
+                            </button>
+                            <div class="dropdown-menu" id="filterMenu">
+                                <div class="filter-option">
+                                    <input type="checkbox" id="rankedOnly" checked>
+                                    <label for="rankedOnly">Ranked teams only</label>
+                                </div>
+                                <div class="filter-option">
+                                    <input type="checkbox" id="primetime" checked>
+                                    <label for="primetime">Primetime games</label>
+                                </div>
+                                <div class="filter-option">
+                                    <input type="checkbox" id="conferences" checked>
+                                    <label for="conferences">Major conferences</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="games-container" id="gamesContainer">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading today's games...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Odds Comparison Section -->
+            <section id="odds" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-line"></i>
+                        Odds Comparison
+                    </h2>
+                    <div class="odds-tabs">
+                        <button class="tab-btn active" data-market="spread">Spreads</button>
+                        <button class="tab-btn" data-market="moneyline">Moneylines</button>
+                        <button class="tab-btn" data-market="total">Totals</button>
+                        <button class="tab-btn" data-market="props">Props</button>
+                    </div>
+                </div>
+                
+                <div class="odds-content" id="oddsContent">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading odds data...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Expert Insights Section -->
+            <section id="insights" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-brain"></i>
+                        Expert Insights
+                    </h2>
+                    <div class="insights-filters">
+                        <button class="filter-pill active" data-category="all">All</button>
+                        <button class="filter-pill" data-category="betting_pick">Picks</button>
+                        <button class="filter-pill" data-category="line_movement">Line Moves</button>
+                        <button class="filter-pill" data-category="injury_update">Injuries</button>
+                        <button class="filter-pill" data-category="weather_impact">Weather</button>
+                    </div>
+                </div>
+                
+                <div class="insights-grid" id="insightsGrid">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading expert insights...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Trends Section -->
+            <section id="trends" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-fire"></i>
+                        Trending
+                    </h2>
+                </div>
+                
+                <div class="trends-grid">
+                    <div class="trend-card">
+                        <h3>🔥 Hot Picks</h3>
+                        <div class="trending-list" id="hotPicks">
+                            <div class="loading-spinner small">
+                                <div class="spinner"></div>
+                                <p>Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="trend-card">
+                        <h3>📈 Line Movements</h3>
+                        <div class="trending-list" id="lineMovements">
+                            <div class="loading-spinner small">
+                                <div class="spinner"></div>
+                                <p>Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="trend-card">
+                        <h3>👑 Top Experts</h3>
+                        <div class="trending-list" id="topExperts">
+                            <div class="loading-spinner small">
+                                <div class="spinner"></div>
+                                <p>Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Game Detail Modal -->
+    <div class="modal-overlay" id="gameModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Game Details</h2>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="api.js"></script>
+    <script src="components.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
