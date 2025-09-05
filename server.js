@@ -25,8 +25,7 @@ const express = require('express');
     _id: '1',
     twitterHandle: 'BradPowers',
     expertName: 'Brad Powers',
-    content: 'Alabama -3.5 looks like solid value. Their offense has been 
-  explosive in recent games.',
+    content: 'Alabama -3.5 looks like solid value!',
     timestamp: new Date(Date.now() - 30*60*1000).toISOString(),
     likes: 145,
     retweets: 23,
@@ -73,5 +72,5 @@ const express = require('express');
   });
 
   app.listen(PORT, () => {
-    console.log('🏈 App running on port ' + PORT);
+    console.log('App running on port ' + PORT);
   });
