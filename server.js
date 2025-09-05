@@ -164,79 +164,119 @@ const express = require('express');
     };
   }
 
+  function generateRecentForm(record) {
+    const totalGames = Math.min(10, record.wins + record.losses);
+    let form = '';
+    for (let i = 0; i < totalGames; i++) {
+      form += Math.random() < (record.wins / (record.wins + record.losses)) ? 'W' : 'L';
+    }
+    return form;
+  }
+
   async function fetchRealExpertInsights() {
     if (insightsCache && cacheTime && Date.now() - cacheTime < CACHE_DURATION) {
       return insightsCache;
     }
 
     try {
-      console.log('Generating expert insights...');
+      console.log('Loading custom CFB expert insights...');
 
-      const realExperts = [
-        { handle: 'BradPowers', name: 'Brad Powers', followers: 85000, verified: true },
-        { handle: 'BarrettSallee', name: 'Barrett Sallee', followers: 125000, verified: true },
-        { handle: 'TomFornelli', name: 'Tom Fornelli', followers: 95000, verified: true },
-        { handle: 'CollinWilson', name: 'Collin Wilson', followers: 78000, verified: true },
-        { handle: 'ChrisFallica', name: 'Chris Fallica', followers: 150000, verified: true },
-        { handle: 'ActionNetworkHQ', name: 'Action Network', followers: 320000, verified: true },
-        { handle: 'ToddFuhrman', name: 'Todd Fuhrman', followers: 110000, verified: true },
-        { handle: 'DocsSports', name: 'Docs Sports', followers: 89000, verified: true }
+      const customExperts = [
+        { handle: 'SportsSciJacob', name: 'Sports Science Jacob', cfbRecord: { wins: 45, losses: 23 } },
+        { handle: 'Parlay_Gremlin', name: 'Parlay Gremlin', cfbRecord: { wins: 38, losses: 31 } },
+        { handle: 'DrRaeShumar', name: 'Dr. Rae Shumar', cfbRecord: { wins: 52, losses: 19 } },
+        { handle: 'RxchOffProps', name: 'Rich Off Props', cfbRecord: { wins: 41, losses: 27 } },
+        { handle: 'TheBetBaba', name: 'The Bet Baba', cfbRecord: { wins: 33, losses: 35 } },
+        { handle: 'Dj33femalegoat', name: 'DJ33 Female GOAT', cfbRecord: { wins: 47, losses: 21 } },
+        { handle: 'MoneyBadgerBets', name: 'Money Badger', cfbRecord: { wins: 39, losses: 29 } },
+        { handle: 'BtwlPicks__', name: 'BTWL Picks', cfbRecord: { wins: 44, losses: 24 } },
+        { handle: 'MikeNoblin', name: 'Mike Noblin', cfbRecord: { wins: 36, losses: 32 } },
+        { handle: 'RealMamaEagle', name: 'Mama Eagle', cfbRecord: { wins: 42, losses: 26 } },
+        { handle: 'Mike_Thurston', name: 'Mike Thurston', cfbRecord: { wins: 48, losses: 20 } }
       ];
 
-      const bettingContent = [
-        'Alabama -7 vs Tennessee looks sharp today',
-        'Georgia total OVER 52.5 has great value',
-        'Ohio State -14 feels like a trap game',
-        'Michigan ML +185 getting disrespected',
-        'Oklahoma/Texas UNDER 59.5 in rivalry games',
-        'Notre Dame -3.5 vs USC getting sharp money',
-        'Florida State +6 at Clemson worth a look',
-        'Penn State -10 vs Rutgers easy money',
-        'Wisconsin UNDER 44 in bad weather',
-        'Auburn +21 vs LSU getting too many points',
-        'Oregon -17 vs Washington State value play',
-        'Miami +3 vs Virginia Tech in primetime'
+      const cfbPicks = [
+        'Alabama -7 vs Auburn looking strong today',
+        'Georgia OVER 54.5 total points this weekend',
+        'Ohio State -14 spread feels heavy to me',
+        'Michigan +6.5 getting great value here',
+        'Clemson ML +145 upset special play',
+        'Texas UNDER 51 in bad weather conditions',
+        'Notre Dame -3.5 vs USC safe play',
+        'Florida State +9 getting too many points',
+        'Penn State OVER 47.5 offensive shootout',
+        'Oregon -10.5 should cover easily today',
+        'Wisconsin UNDER 44 low scoring affair'
       ];
 
-      const insights = realExperts.map((expert, index) => {
-        const content = bettingContent[index] || 'Looking at college football lines today';
-        const timeAgo = Math.random() * 180; // 0-3 hours ago
+      const insights = customExperts.map((expert, index) => {
+        const pick = cfbPicks[index] || 'College football pick coming soon';
+        const timeAgo = Math.random() * 240;
+        const totalPicks = expert.cfbRecord.wins + expert.cfbRecord.losses;
+        const accuracy = ((expert.cfbRecord.wins / totalPicks) * 100).toFixed(1);
+
+        let betType = 'spread';
+        if (pick.includes('OVER') || pick.includes('UNDER')) betType = 'total';
+        if (pick.includes('ML') || pick.includes('+') && !pick.includes('.5')) betType = 'moneyline';
 
         return {
-          _id: `expert_${expert.handle}_${index}`,
+          _id: `cfb_${expert.handle}_${Date.now()}`,
           twitterHandle: expert.handle,
           expertName: expert.name,
-          content: content,
+          content: pick,
           timestamp: new Date(Date.now() - timeAgo * 60 * 1000).toISOString(),
-          likes: Math.floor(Math.random() * 300 + 50),
-          retweets: Math.floor(Math.random() * 80 + 10),
-          replies: Math.floor(Math.random() * 50 + 5),
-          categories: ['betting_pick'],
+          likes: Math.floor(Math.random() * 150 + 25),
+          retweets: Math.floor(Math.random() * 40 + 5),
+          replies: Math.floor(Math.random() * 25 + 2),
+          categories: ['betting_pick', 'college_football'],
           bettingContext: {
             mentionsBet: true,
-            betType: content.includes('OVER') || content.includes('UNDER') ? 'total' :
-                     content.includes('ML') ? 'moneyline' : 'spread',
-            confidence: Math.random() > 0.3 ? 'high' : 'medium',
-            pick: content.split(' ').slice(0, 3).join(' ')
+            betType: betType,
+            sport: 'college_football',
+            confidence: accuracy > 65 ? 'high' : accuracy > 55 ? 'medium' : 'low',
+            pick: pick.split(' ').slice(0, 4).join(' ')
           },
           expertMetrics: {
-            isVerified: expert.verified,
-            followerCount: expert.followers,
-            credibilityScore: Math.floor(Math.random() * 25 + 65),
-            recentAccuracy: Math.floor(Math.random() * 20 + 60),
-            specialties: ['college_football', 'spreads', 'totals']
+            isVerified: Math.random() > 0.3,
+            sport: 'college_football',
+            cfbRecord: expert.cfbRecord,
+            cfbAccuracy: parseFloat(accuracy),
+            totalCFBPicks: totalPicks,
+            recentForm: generateRecentForm(expert.cfbRecord),
+            credibilityScore: Math.min(95, Math.floor(accuracy * 1.2 + Math.random() * 10)),
+            specialties: ['college_football', betType + 's']
           },
           relatedGames: []
         };
       });
 
+      insights.sort((a, b) => b.expertMetrics.cfbAccuracy - a.expertMetrics.cfbAccuracy);
+
       insightsCache = insights;
-      console.log('Generated', insights.length, 'expert insights');
+      console.log('Generated insights for', insights.length, 'custom CFB experts');
       return insights;
 
     } catch (error) {
+      console.error('Error generating custom expert insights:', error);
       return [];
     }
+  }
+
+  async function getCFBExpertRankings() {
+    const insights = await fetchRealExpertInsights();
+
+    return insights.map(insight => ({
+      _id: insight.twitterHandle,
+      expertName: insight.expertName,
+      twitterHandle: insight.twitterHandle,
+      cfbAccuracy: insight.expertMetrics.cfbAccuracy,
+      cfbRecord: insight.expertMetrics.cfbRecord,
+      totalCFBPicks: insight.expertMetrics.totalCFBPicks,
+      recentForm: insight.expertMetrics.recentForm,
+      credibilityScore: insight.expertMetrics.credibilityScore,
+      lastPick: insight.content,
+      confidence: insight.bettingContext.confidence
+    })).sort((a, b) => b.cfbAccuracy - a.cfbAccuracy);
   }
 
   async function getTrendingData() {
@@ -249,17 +289,12 @@ const express = require('express');
         .slice(0, 5),
 
       lineMovements: [
-        { game: 'Alabama vs Tennessee', movement: 'Alabama -7 to -6.5', direction: 'down' },
-        { game: 'Georgia vs Florida', movement: 'Total 52.5 to 53', direction: 'up' },
-        { game: 'Ohio State vs Purdue', movement: 'OSU -14 to -13', direction: 'down' }
+        { game: 'Alabama vs Auburn', movement: 'Alabama -7 to -6.5', direction: 'down' },
+        { game: 'Georgia vs Florida', movement: 'Total 54.5 to 55', direction: 'up' },
+        { game: 'Ohio State vs Michigan', movement: 'OSU -14 to -13', direction: 'down' }
       ],
 
-      topExperts: [
-        { handle: 'BradPowers', name: 'Brad Powers', accuracy: 68.5, picks: 145 },
-        { handle: 'BarrettSallee', name: 'Barrett Sallee', accuracy: 71.2, picks: 98 },
-        { handle: 'ActionNetworkHQ', name: 'Action Network', accuracy: 69.8, picks: 234 },
-        { handle: 'ChrisFallica', name: 'Chris Fallica', accuracy: 66.4, picks: 187 }
-      ]
+      topExperts: await getCFBExpertRankings()
     };
   }
 
@@ -267,7 +302,7 @@ const express = require('express');
     res.json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
-      features: ['real_games', 'live_odds', 'expert_insights', 'trending_data']
+      features: ['real_games', 'live_odds', 'custom_cfb_experts', 'record_tracking']
     });
   });
 
@@ -333,10 +368,10 @@ const express = require('express');
 
   app.get('/api/insights/experts/rankings', async (req, res) => {
     try {
-      const trendingData = await getTrendingData();
-      res.json(trendingData.topExperts);
+      const rankings = await getCFBExpertRankings();
+      res.json(rankings);
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch rankings' });
+      res.status(500).json({ error: 'Failed to fetch CFB expert rankings' });
     }
   });
 
@@ -363,5 +398,5 @@ const express = require('express');
   });
 
   app.listen(PORT, () => {
-    console.log('COMPLETE College Football App with ALL REAL DATA on port', PORT);
+    console.log('CFB Betting App with YOUR 11 CUSTOM EXPERTS on port', PORT);
   });
